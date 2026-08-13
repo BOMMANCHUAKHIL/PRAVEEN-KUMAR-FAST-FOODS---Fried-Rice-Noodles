@@ -1,6 +1,9 @@
 import axios from 'axios';
 
+// ✅ This should be reading from environment variable
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://ahaa-backend-production.up.railway.app';
+
+console.log('🔍 API_BASE:', API_BASE); // ✅ Add this to debug
 
 export const api = axios.create({
   baseURL: API_BASE,
