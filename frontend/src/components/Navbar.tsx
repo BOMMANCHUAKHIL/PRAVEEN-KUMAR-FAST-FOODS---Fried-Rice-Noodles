@@ -6,9 +6,12 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { totalItems } = useCart();
+  const { items } = useCart();  // ✅ Get items from cart
   const { isAdmin, adminLogout, customerLogout, user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // ✅ Calculate total items from cart
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLogout = () => {
     if (isAdmin) adminLogout();
@@ -134,8 +137,7 @@ export default function Navbar() {
               className="block text-white hover:text-yellow-300 font-medium"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Cart {getTotalItems > 0 && `(${totalItems})`}
-              const totalItems = getTotalItems();
+              Cart {totalItems > 0 && `(${totalItems})`}
             </Link>
 
             {isAuthenticated || isAdmin ? (
