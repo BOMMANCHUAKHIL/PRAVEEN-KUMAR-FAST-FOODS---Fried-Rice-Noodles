@@ -1,12 +1,16 @@
 import axios from 'axios';
 
-// ✅ This should be reading from environment variable
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://ahaa-backend-production.up.railway.app';
+// ✅ Read from environment variable
+const API_BASE = import.meta.env.VITE_API_BASE;
 
-console.log('🔍 API_BASE:', API_BASE); // ✅ Add this to debug
+// ✅ If not set, use the hardcoded backend URL
+const API_URL = API_BASE || 'https://ahaa-backend-production.up.railway.app';
+
+console.log('🔍 API_BASE from env:', API_BASE);
+console.log('🔍 API_URL used:', API_URL);
 
 export const api = axios.create({
-  baseURL: API_BASE,
+  baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
