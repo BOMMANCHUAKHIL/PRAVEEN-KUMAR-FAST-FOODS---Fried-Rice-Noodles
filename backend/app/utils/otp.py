@@ -49,6 +49,51 @@ def verify_otp(phone: str, otp: str) -> bool:
 
 
 def send_otp_sms(phone: str, otp: str):
-    """Send OTP via SMS (console fallback)"""
-    print(f"📱 [SMS] {phone} -> {otp}")
-    return True
+    try:
+        api_key = settings.FAST2SMS_API_KEY
+
+        if not api_key:
+            print(f"❌ No API Key found")
+            return False
+
+        # Clean phone to 10 digits
+        clean_phone = phone.replace("+", "").replace(" ", "").strip()
+        if clean_phone.startswith("91"):
+            clean_phone = clean_phone[2:]
+        if len(clean_phone) > 10:
+            clean_phone = clean_phone[-10:]
+
+        # ✅ Use the correct URL and route
+        url = "https://www.fast2sms.com/dev/bulkV2"
+
+        payload = {
+            "route": "otp",  # ✅ Use "otp" for OTP
+            "variables_values": otp,
+            "numbers": clean_phone,
+            "flash": 0,
+        }
+
+        headers = {
+            "authorization": api_key,
+            "Content-Type": "application/json"
+        }
+
+        print(f"📤 Phone: {clean_phone}")
+        print(f"📱 [SMS] {phone} -> {otp}")
+
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+
+        # ✅ Print the actual response from Fast2SMS
+        result = response.json()
+        print(f"📥 Fast2SMS Response: {result}")
+
+        if result.get("return"):
+            print(f"✅ SMS sent successfully")
+            return True
+        else:
+            print(f"❌ Fast2SMS Error: {result.get('message')}")
+            return False
+
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return False
