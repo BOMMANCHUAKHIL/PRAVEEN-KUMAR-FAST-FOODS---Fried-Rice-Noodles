@@ -1,23 +1,40 @@
 import axios from 'axios';
 
-// ✅ Read from environment variable
-const API_BASE = import.meta.env.VITE_API_BASE;
+// ✅ HARDCODE the backend URL directly
+const API_URL = 'https://ahaa-backend-production.up.railway.app';
 
-// ✅ If not set, use the hardcoded backend URL
-const API_URL = API_BASE || 'https://ahaa-backend-production.up.railway.app';
-
-console.log('🔍 API_BASE from env:', API_BASE);
-console.log('🔍 API_URL used:', API_URL);
+console.log('📡 API URL:', API_URL);
 
 export const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
+  timeout: 30000,
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('adminToken') || localStorage.getItem('customerToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('adminToken') || localStorage.getItem('customerToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    console.log('📤 Request:', config.method?.toUpperCase(), config.url);
+    return config;
+  },
+  (error) => {
+    console.error('❌ Request Error:', error);
+    return Promise.reject(error);
   }
-  return config;
-});
+);
+
+api.interceptors.response.use(
+  (response) => {
+    console.log('📥 Response:', response.status, response.config.url);
+    return response;
+  },
+  (error) => {
+    console.error('❌ Response Error:', error.response?.status, error.response?.data);
+    return Promise.reject(error);
+  }
+);
+
+export default api;
