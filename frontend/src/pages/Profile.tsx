@@ -26,7 +26,10 @@ export default function Profile() {
     setLoading(true);
     try {
       const response = await authService.updateProfile(editData);
-      updateUser(response.data);
+      updateUser({
+  ...response.data,
+  referredBy: response.data.referredBy || undefined
+});
       setIsEditing(false);
       toast.success('Profile updated!');
     } catch (err) {

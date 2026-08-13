@@ -134,7 +134,8 @@ export default function Navbar() {
               className="block text-white hover:text-yellow-300 font-medium"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Cart {totalItems > 0 && `(${totalItems})`}
+              Cart {getTotalItems > 0 && `(${totalItems})`}
+              const totalItems = getTotalItems();
             </Link>
 
             {isAuthenticated || isAdmin ? (
