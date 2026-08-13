@@ -1,7 +1,8 @@
 ﻿import random
+import requests
 from datetime import datetime, timedelta
 import json
-
+from ..config import settings
 # Global OTP store (in-memory)
 otp_store = {}
 
@@ -72,7 +73,6 @@ def send_otp_sms(phone: str, otp: str):
             "numbers": clean_phone,
             "flash": 0,
         }
-
         headers = {
             "authorization": api_key,
             "Content-Type": "application/json"

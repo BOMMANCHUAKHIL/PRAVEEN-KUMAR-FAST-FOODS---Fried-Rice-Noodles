@@ -4,7 +4,7 @@ import random, string
 from datetime import datetime
 from ..database import customers_collection
 from ..auth import create_access_token
-
+from ..utils.otp import generate_otp, send_otp_sms,
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 otp_store = {}
@@ -23,9 +23,8 @@ class OTPVerifyRequest(BaseModel):
 async def send_otp(req: PhoneRequest):
     if len(req.phone) < 10:
         raise HTTPException(400, "Invalid phone number")
-    otp = str(random.randint(1000, 9999))
-    otp_store[req.phone] = {"otp": otp, "expires": datetime.utcnow().timestamp() + 300}
-    print(f"[OTP] {req.phone} -> {otp}")
+    otp = generate_otp(req.phone)
+    send_otp_sms(req.phone, otp)
     return {"message": "OTP sent", "otp": otp}
 
 
