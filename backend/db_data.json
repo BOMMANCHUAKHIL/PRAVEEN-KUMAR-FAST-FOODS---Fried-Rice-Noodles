@@ -1,0 +1,375 @@
+{
+  "products": [
+    {
+      "name": "Veg Fried Rice",
+      "description": "Classic fried rice with fresh vegetables, spring onions, and aromatic Chinese spices.",
+      "category": "fried-rice",
+      "image": "",
+      "variants": [
+        {
+          "weight": "Regular",
+          "price": 100,
+          "inStock": true
+        },
+        {
+          "weight": "Large",
+          "price": 160,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": true,
+      "tags": [
+        "Veg",
+        "Popular"
+      ],
+      "_id": 1,
+      "id": "1"
+    },
+    {
+      "name": "Gobbi Fried Rice",
+      "description": "Delicious fried rice with crispy gobi (cauliflower) and fresh vegetables.",
+      "category": "fried-rice",
+      "image": "",
+      "variants": [
+        {
+          "weight": "Regular",
+          "price": 120,
+          "inStock": true
+        },
+        {
+          "weight": "Large",
+          "price": 180,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": true,
+      "tags": [
+        "Veg",
+        "Special"
+      ],
+      "_id": 2,
+      "id": "2"
+    },
+    {
+      "name": "Chicken Fried Rice",
+      "description": "Tender chicken pieces tossed with eggs, vegetables, and flavorful Chinese sauces.",
+      "category": "fried-rice",
+      "image": "",
+      "variants": [
+        {
+          "weight": "Regular",
+          "price": 150,
+          "inStock": true
+        },
+        {
+          "weight": "Large",
+          "price": 220,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": true,
+      "tags": [
+        "Non-Veg",
+        "Bestseller"
+      ],
+      "_id": 3,
+      "id": "3"
+    },
+    {
+      "name": "Egg Fried Rice",
+      "description": "Fluffy rice stir-fried with scrambled eggs, spring onions, and soy sauce.",
+      "category": "fried-rice",
+      "image": "",
+      "variants": [
+        {
+          "weight": "Regular",
+          "price": 110,
+          "inStock": true
+        },
+        {
+          "weight": "Large",
+          "price": 170,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": false,
+      "tags": [
+        "Egg",
+        "Popular"
+      ],
+      "_id": 4,
+      "id": "4"
+    },
+    {
+      "name": "Flashman Fried Rice",
+      "description": "Special flashman style fried rice with mixed vegetables and secret spices.",
+      "category": "fried-rice",
+      "image": "",
+      "variants": [
+        {
+          "weight": "Regular",
+          "price": 100,
+          "inStock": true
+        },
+        {
+          "weight": "Large",
+          "price": 160,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": false,
+      "tags": [
+        "Veg",
+        "Special"
+      ],
+      "_id": 5,
+      "id": "5"
+    },
+    {
+      "name": "Veg Noodles",
+      "description": "Stir-fried noodles with fresh vegetables, spring onions, and Chinese sauces.",
+      "category": "noodles",
+      "image": "",
+      "variants": [
+        {
+          "weight": "Regular",
+          "price": 100,
+          "inStock": true
+        },
+        {
+          "weight": "Large",
+          "price": 160,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": true,
+      "tags": [
+        "Veg",
+        "Popular"
+      ],
+      "_id": 6,
+      "id": "6"
+    },
+    {
+      "name": "Chicken Noodles",
+      "description": "Noodles with tender chicken pieces, vegetables, and aromatic spices.",
+      "category": "noodles",
+      "image": "",
+      "variants": [
+        {
+          "weight": "Regular",
+          "price": 150,
+          "inStock": true
+        },
+        {
+          "weight": "Large",
+          "price": 220,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": true,
+      "tags": [
+        "Non-Veg",
+        "Bestseller"
+      ],
+      "_id": 7,
+      "id": "7"
+    },
+    {
+      "name": "Leg Piece",
+      "description": "Crispy fried chicken leg piece with special masala coating.",
+      "category": "starters",
+      "image": "",
+      "variants": [
+        {
+          "weight": "1 Pc",
+          "price": 40,
+          "inStock": true
+        },
+        {
+          "weight": "2 Pcs",
+          "price": 70,
+          "inStock": true
+        },
+        {
+          "weight": "4 Pcs",
+          "price": 130,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": true,
+      "tags": [
+        "Non-Veg",
+        "Crispy"
+      ],
+      "_id": 8,
+      "id": "8"
+    },
+    {
+      "name": "Chicken Wings",
+      "description": "Crispy fried chicken wings tossed in spicy sauce.",
+      "category": "starters",
+      "image": "",
+      "variants": [
+        {
+          "weight": "3 Pcs",
+          "price": 50,
+          "inStock": true
+        },
+        {
+          "weight": "6 Pcs",
+          "price": 90,
+          "inStock": true
+        },
+        {
+          "weight": "12 Pcs",
+          "price": 170,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": true,
+      "tags": [
+        "Non-Veg",
+        "Popular"
+      ],
+      "_id": 9,
+      "id": "9"
+    },
+    {
+      "name": "Gobbi Manchuriya",
+      "description": "Crispy fried gobi (cauliflower) tossed in spicy, tangy Manchurian sauce.",
+      "category": "starters",
+      "image": "",
+      "variants": [
+        {
+          "weight": "Regular",
+          "price": 150,
+          "inStock": true
+        },
+        {
+          "weight": "Large",
+          "price": 220,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": true,
+      "tags": [
+        "Veg",
+        "Bestseller"
+      ],
+      "_id": 10,
+      "id": "10"
+    },
+    {
+      "name": "Chicken Manchuriya",
+      "description": "Crispy chicken balls tossed in spicy, tangy Manchurian sauce.",
+      "category": "starters",
+      "image": "",
+      "variants": [
+        {
+          "weight": "Regular",
+          "price": 150,
+          "inStock": true
+        },
+        {
+          "weight": "Large",
+          "price": 220,
+          "inStock": true
+        }
+      ],
+      "isAvailable": true,
+      "isFeatured": true,
+      "tags": [
+        "Non-Veg",
+        "Bestseller"
+      ],
+      "_id": 11,
+      "id": "11"
+    }
+  ],
+  "orders": [
+    {
+      "order_number": "ORD-64399140",
+      "customer_id": 1,
+      "customer_phone": "7680803766",
+      "customer_name": "",
+      "items": [
+        {
+          "name": "Veg Fried Rice",
+          "variant": "Regular",
+          "quantity": 2,
+          "price": 100
+        }
+      ],
+      "total_amount": 230,
+      "status": "delivered",
+      "payment_method": "cod",
+      "created_at": "2026-08-13T05:04:58.799127",
+      "updated_at": "2026-08-13T05:53:12.027304",
+      "_id": 3
+    },
+    {
+      "order_number": "ORD-90165967",
+      "customer_id": 1,
+      "customer_phone": "7680803766",
+      "customer_name": "",
+      "items": [
+        {
+          "name": "Veg Fried Rice",
+          "variant": "Regular",
+          "quantity": 1,
+          "price": 100
+        }
+      ],
+      "total_amount": 130,
+      "status": "preparing",
+      "payment_method": "cod",
+      "created_at": "2026-08-12T17:04:37.760753",
+      "updated_at": "2026-08-13T05:54:06.021758",
+      "_id": 2
+    },
+    {
+      "order_number": "ORD-70236880",
+      "customer_id": 1,
+      "customer_phone": "7680803766",
+      "customer_name": "",
+      "items": [
+        {
+          "name": "Chilli Chicken",
+          "variant": "Regular",
+          "quantity": 1,
+          "price": 160
+        }
+      ],
+      "total_amount": 190,
+      "status": "placed",
+      "payment_method": "upi",
+      "created_at": "2026-08-13T05:55:21.465462",
+      "updated_at": "2026-08-13T05:55:21.465462",
+      "_id": 12
+    }
+  ],
+  "customers": [
+    {
+      "phone": "7680803766",
+      "name": "",
+      "email": "",
+      "loyalty_points": 0,
+      "referral_code": "94EA5JKM",
+      "created_at": "2026-08-12T17:04:22.561146",
+      "_id": 1
+    }
+  ],
+  "_id_counter": 13,
+  "saved_at": "2026-08-13T05:55:21.467475"
+}
