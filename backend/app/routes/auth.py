@@ -44,6 +44,7 @@ async def verify_otp(req: OTPVerifyRequest):
             "created_at": datetime.utcnow().isoformat()
         })
 
+
     token = create_access_token(data={"sub": req.phone, "role": "customer"})
     return {
         "access_token": token,
