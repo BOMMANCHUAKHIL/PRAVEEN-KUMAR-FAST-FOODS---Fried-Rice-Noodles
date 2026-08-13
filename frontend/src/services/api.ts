@@ -26,6 +26,7 @@ api.interceptors.request.use(
   }
 );
 
+
 api.interceptors.response.use(
   (response) => {
     console.log('📥 Response:', response.status, response.config.url);
