@@ -4,10 +4,9 @@ import random, string
 from datetime import datetime
 from ..database import customers_collection
 from ..auth import create_access_token
-from ..utils.otp import generate_otp, send_otp_sms,
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+from ..utils.otp import generate_otp, send_otp_sms, verify_otp  # ✅ Make sure verify_otp is imported
 
-otp_store = {}
+router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 class PhoneRequest(BaseModel):
@@ -30,14 +29,8 @@ async def send_otp(req: PhoneRequest):
 
 @router.post("/verify-otp")
 async def verify_otp(req: OTPVerifyRequest):
-    stored = otp_store.get(req.phone)
-    if not stored:
-        raise HTTPException(400, "OTP not found")
-    if stored["otp"] != req.otp:
-        raise HTTPException(400, "Invalid OTP")
-    if datetime.utcnow().timestamp() > stored["expires"]:
-        raise HTTPException(400, "OTP expired")
-    del otp_store[req.phone]
+    if not verify_otp(req.phone, req.otp):  # ✅ Use the imported verify_otp function
+        raise HTTPException(400, "Invalid or expired OTP")
 
     customer = await customers_collection.find_customer_by_phone(req.phone)
     if not customer:
