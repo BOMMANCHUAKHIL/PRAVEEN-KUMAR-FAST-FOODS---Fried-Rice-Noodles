@@ -66,7 +66,7 @@ export default function Login() {
           email: user.email,
           loyaltyPoints: user.loyaltyPoints,
           referralCode: user.referralCode,
-          referredBy: user.referredBy,
+          referredBy: user.referredBy || undefined,
           createdAt: user.createdAt
         });
         navigate('/');
