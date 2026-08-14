@@ -3,7 +3,8 @@ export interface Product {
   name: string;
   description: string;
   category: 'fried-rice' | 'noodles' | 'starters' | 'beverages';
-  image: string;
+  image?: string;         // ✅ Optional for local fallback
+  image_url?: string;
   variants: {
     weight: string;
     price: number;

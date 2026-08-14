@@ -12,7 +12,13 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
 
   const getImage = () => {
-      if (product.image_url) return product.image_url;
+    // ✅ 1. Use backend image_url if it exists
+    if (product.image_url) return product.image_url;
+
+    // ✅ 2. Use local image path if it exists
+    if (product.image) return product.image;
+
+    // ✅ 3. Fallback to emojis for local testing
     const images: Record<string, string> = {
       'Veg Fried Rice': '🍚',
       'Gobbi Fried Rice': '🥦',
@@ -31,7 +37,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       'Chilli Chicken': '🍗',
     };
     return images[product.name] || '🍽️';
-  };
+};
 
   return (
     <div className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
