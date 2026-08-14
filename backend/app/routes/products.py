@@ -5,12 +5,12 @@ from ..auth import get_current_admin
 from pydantic import BaseModel
 from typing import List, Optional
 from ..schemas import Product
-router = APIRouter(prefix="/api/products", tags=["products"])
+router = APIRouter(tags=["products"])
 
 class ProductVariant(BaseModel):
     weight: str
     price: float
-    inStock: bool = True
+    in_stock: bool = True
 
 class ProductCreate(BaseModel):
     name: str
@@ -77,7 +77,7 @@ async def create_product(product: ProductCreate, admin: dict = Depends(get_curre
 from ..schemas import Product  # Import your Product schema
 
 
-@router.put("/{product_id}")
+@router.put("/api/products/{product_id}")
 async def update_product(
         product_id: str,
         product_update: ProductCreate,
