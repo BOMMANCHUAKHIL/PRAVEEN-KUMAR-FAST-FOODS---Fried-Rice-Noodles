@@ -12,7 +12,7 @@ export default function Login() {
   const { customerLogin, isAuthenticated } = useAuth();
 
   // Login method: 'otp' or 'password'
-  const [loginMethod, setLoginMethod] = useState<'otp' | 'password'>('otp');
+  const [loginMethod, setLoginMethod] = useState<'otp' | 'password'>('password');
 
   // Common fields
   const [phone, setPhone] = useState('');
@@ -193,7 +193,9 @@ export default function Login() {
         </div>
 
         {/* Login Method Toggle */}
+
         <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
+        {/*
           <button
             onClick={() => {
               setLoginMethod('otp');
@@ -207,6 +209,7 @@ export default function Login() {
           >
             <FaKey className="inline mr-2" /> OTP Login
           </button>
+          */}
           <button
             onClick={() => {
               setLoginMethod('password');
@@ -220,6 +223,7 @@ export default function Login() {
             <FaLock className="inline mr-2" /> Password
           </button>
         </div>
+
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm">
