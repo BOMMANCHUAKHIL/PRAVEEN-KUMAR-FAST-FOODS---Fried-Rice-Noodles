@@ -98,95 +98,95 @@ export const adminService = {
   // =========================
 
   getStats: () =>
-    api.get<DashboardStats>('/api/admin/stats'),
+    api.get<DashboardStats>('/api/admin/stats/'),
 
   getRecentOrders: () =>
-    api.get<Order[]>('/api/admin/orders/recent'),
+    api.get<Order[]>('/api/admin/orders/recent/'),
 
   // =========================
   // Products
   // =========================
 
   getProducts: () =>
-    api.get<Product[]>('/api/products'),
+    api.get<Product[]>('/api/products/'),
 
   getProduct: (id: string) =>
-    api.get<Product>(`/api/products/${id}`),
+    api.get<Product>(`/api/products/${id}/`),
 
   createProduct: (data: ProductCreate) =>
-    api.post('/api/products', data),
+    api.post('/api/products/', data),
 
   updateProduct: (id: string, data: Partial<ProductCreate>) =>
-    api.put(`/api/products/${id}`, data),
+    api.put(`/api/products/${id}/`, data),
 
   deleteProduct: (id: string) =>
-    api.delete(`/api/products/${id}`),
+    api.delete(`/api/products/${id}/`),
 
   // =========================
   // Orders
   // =========================
 
   getOrders: (params?: any) =>
-    api.get<Order[]>('/api/admin/orders', { params }),
+    api.get<Order[]>('/api/admin/orders/', { params }),
 
   getOrder: (id: string) =>
-    api.get<Order>(`/api/admin/orders/${id}`),
+    api.get<Order>(`/api/admin/orders/${id}/`),
 
   updateOrderStatus: (id: string, status: string) =>
-    api.put(`/api/admin/orders/${id}/status`, { status }),
+    api.put(`/api/admin/orders/${id}/status/`, { status }),
 
   updateOrderPayment: (id: string, status: string) =>
-    api.put(`/api/admin/orders/${id}/payment`, { status }),
+    api.put(`/api/admin/orders/${id}/payment/`, { status }),
 
   // =========================
   // Customers
   // =========================
 
   getCustomers: () =>
-    api.get<Customer[]>('/api/admin/customers'),
+    api.get<Customer[]>('/api/admin/customers/'),
 
   getCustomer: (id: string) =>
-    api.get<Customer>(`/api/admin/customers/${id}`),
+    api.get<Customer>(`/api/admin/customers/${id}/`),
 
   // =========================
   // Categories
   // =========================
 
   getCategories: () =>
-    api.get<Category[]>('/api/admin/categories'),
+    api.get<Category[]>('/api/admin/categories/'),
 
   createCategory: (data: Partial<Category>) =>
-    api.post<Category>('/api/admin/categories', data),
+    api.post<Category>('/api/admin/categories/', data),
 
   updateCategory: (id: string, data: Partial<Category>) =>
-    api.put<Category>(`/api/admin/categories/${id}`, data),
+    api.put<Category>(`/api/admin/categories/${id}/`, data),
 
   deleteCategory: (id: string) =>
-    api.delete(`/api/admin/categories/${id}`),
+    api.delete(`/api/admin/categories/${id}/`),
 
   // =========================
   // Coupons
   // =========================
 
   getCoupons: () =>
-    api.get<Coupon[]>('/api/admin/coupons'),
+    api.get<Coupon[]>('/api/admin/coupons/'),
 
   createCoupon: (data: Partial<Coupon>) =>
-    api.post<Coupon>('/api/admin/coupons', data),
+    api.post<Coupon>('/api/admin/coupons/', data),
 
   updateCoupon: (id: string, data: Partial<Coupon>) =>
-    api.put<Coupon>(`/api/admin/coupons/${id}`, data),
+    api.put<Coupon>(`/api/admin/coupons/${id}/`, data),
 
   deleteCoupon: (id: string) =>
-    api.delete(`/api/admin/coupons/${id}`),
+    api.delete(`/api/admin/coupons/${id}/`),
 
   // =========================
   // Settings
   // =========================
 
   getSettings: () =>
-    api.get('/api/admin/settings'),
+    api.get('/api/admin/settings/'),
 
   updateSettings: (data: any) =>
-    api.put('/api/admin/settings', data),
+    api.put('/api/admin/settings/', data),
 };

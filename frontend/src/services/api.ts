@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// ✅ HARDCODE the backend URL directly
-const API_URL = 'https://praveen-kumar-fast-foods-fried-rice-noodles-production.up.railway.app';
+// ✅ HARDCODE the backend URL directly with trailing slash
+const API_URL = 'https://praveen-kumar-fast-foods-fried-rice-noodles-production.up.railway.app/';
 
 console.log('📡 API URL:', API_URL);
 
@@ -25,7 +25,6 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 
 api.interceptors.response.use(
   (response) => {
