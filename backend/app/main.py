@@ -7,16 +7,10 @@ from .routes import products, orders, auth
 
 app = FastAPI(title="PRAVEEN KUMAR FAST FOODS API")
 
-# ✅ CORS Configuration - Allow all origins for testing
+# ✅ CORS - Allow all origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://pkfastfood.up.railway.app",
-        "https://ahaa-emi-ruchi.up.railway.app",
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "*"  # ⚠️ For testing only - remove in production
-    ],
+    allow_origins=["*"],  # ✅ Allow ALL origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
