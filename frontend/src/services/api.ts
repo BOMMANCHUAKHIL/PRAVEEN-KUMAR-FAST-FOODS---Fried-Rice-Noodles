@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// ✅ HARDCODE the backend URL directly with trailing slash
+// ✅ Explicitly use HTTPS
 const API_URL = 'https://praveen-kumar-fast-foods-fried-rice-noodles-production.up.railway.app/';
 
 console.log('📡 API URL:', API_URL);
@@ -9,10 +9,19 @@ export const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 30000,
+  // ✅ Force HTTPS
+  httpsAgent: new (require('https').Agent)({
+    rejectUnauthorized: false,
+  }),
 });
 
 api.interceptors.request.use(
   (config) => {
+    // ✅ Ensure URL uses HTTPS
+    if (config.url && config.url.startsWith('http://')) {
+      config.url = config.url.replace('http://', 'https://');
+    }
+
     const token = localStorage.getItem('adminToken') || localStorage.getItem('customerToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
