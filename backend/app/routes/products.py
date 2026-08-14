@@ -94,11 +94,8 @@ async def update_product(
         update_data = product_update.dict(exclude_unset=True)
         update_data["updated_at"] = datetime.utcnow().isoformat()
 
-        # Perform update in your database
-        updated_product = await products_collection.update_product(
-            product_id,
-            update_data
-        )
+        # Perform update
+        updated_product = await products_collection.update_product(product_id, update_data)
 
         if not updated_product:
             raise HTTPException(500, "Failed to update product")
@@ -113,3 +110,11 @@ async def update_product(
     except Exception as e:
         print(f"❌ Error updating product: {e}")
         raise HTTPException(500, f"Error updating product: {str(e)}")
+
+@router.delete("/{product_id}")
+async def delete_product(product_id: str, admin: dict = Depends(get_current_admin)):
+    """Delete a product"""
+    deleted = await products_collection.delete_product(product_id)
+    if not deleted:
+        raise HTTPException(404, f"Product {product_id} not found")
+    return {"message": "Product deleted successfully"}
