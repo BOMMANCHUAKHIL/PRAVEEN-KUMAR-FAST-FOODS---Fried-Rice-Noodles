@@ -34,7 +34,7 @@ def product_helper(product):
         "createdAt": product.get("createdAt", datetime.utcnow().isoformat()),
     }
 
-@router.get("/")
+@router.get("")
 async def get_products():
     return [product_helper(p) for p in await products_collection.find_products()]
 
