@@ -21,6 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if form_data.username != settings.ADMIN_EMAIL or not verify_password(
