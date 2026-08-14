@@ -1,23 +1,57 @@
 ﻿import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { products, categories } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import { FaSearch, FaFilter, FaTimes } from 'react-icons/fa';
+import axios from 'axios';
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToCart } = useCart();
+
+  // State for live data from backend
+  const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const categoryFilter = searchParams.get('category') || '';
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(categoryFilter);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Filter products
+  // ✅ FETCH PRODUCTS FROM BACKEND
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const API_URL = import.meta.env.VITE_API_BASE || 'https://praveen-kumar-fast-foods-fried-rice-noodles-production.up.railway.app';
+        const response = await axios.get(`${API_URL}/api/products`);
+
+        // Set products from backend
+        setProducts(response.data);
+
+        // Dynamically extract categories from the products themselves
+        const uniqueCategories = Array.from(
+          new Set(response.data.map((p: any) => p.category))
+        ).map((cat) => ({ id: cat, name: cat, icon: '🍜' }));
+        setCategories(uniqueCategories);
+
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products. Please refresh.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Filter products (now using live backend data)
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) ||
-                          product.description.toLowerCase().includes(search.toLowerCase());
+                          (product.description && product.description.toLowerCase().includes(search.toLowerCase()));
     const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
     return matchesSearch && matchesCategory;
   });
@@ -38,6 +72,24 @@ export default function Products() {
       image: product.image,
     });
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="text-6xl mb-4 animate-spin">🍜</div>
+        <h2 className="text-xl text-gray-600">Loading our delicious menu...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <span className="text-6xl block mb-4">⚠️</span>
+        <h2 className="text-xl text-red-600">{error}</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

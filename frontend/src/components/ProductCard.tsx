@@ -12,6 +12,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
 
   const getImage = () => {
+      if (product.image_url) return product.image_url;
     const images: Record<string, string> = {
       'Veg Fried Rice': '🍚',
       'Gobbi Fried Rice': '🥦',
