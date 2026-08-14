@@ -7,7 +7,7 @@ from .routes import products, orders, auth
 
 app = FastAPI(title="PRAVEEN KUMAR FAST FOODS API")
 
-# ✅ CORS Configuration - Allow frontend domains
+# ✅ CORS Configuration - Allow all origins for testing
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -15,12 +15,12 @@ app.add_middleware(
         "https://ahaa-emi-ruchi.up.railway.app",
         "http://localhost:5173",
         "http://localhost:3000",
+        "*"  # ⚠️ For testing only - remove in production
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
