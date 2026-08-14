@@ -4,8 +4,8 @@ import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@pkfastfood.com');
+  const [password, setPassword] = useState('pkfastfood@123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
