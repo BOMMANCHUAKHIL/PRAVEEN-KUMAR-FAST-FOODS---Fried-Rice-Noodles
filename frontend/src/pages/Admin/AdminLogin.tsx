@@ -58,7 +58,7 @@ export default function AdminLogin() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        <p className="text-xs text-gray-400 text-center mt-4">Default: admin@ahaa.com / SecurePass123</p>
+        <p className="text-xs text-gray-400 text-center mt-4">Default: admin@pkfastfood.com / pkfastfood@123</p>
       </div>
     </div>
   );
