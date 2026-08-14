@@ -7,9 +7,15 @@ from .routes import products, orders, auth
 
 app = FastAPI(title="PRAVEEN KUMAR FAST FOODS API")
 
+# ✅ CORS Configuration - Allow frontend domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://pkfastfood.up.railway.app",
+        "https://ahaa-emi-ruchi.up.railway.app",
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,6 +29,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(status_code=401, detail="Incorrect email or password")
     return {"access_token": create_access_token(data={"sub": form_data.username, "role": "admin"}), "token_type": "bearer"}
 
+# Register all routers
 app.include_router(products.router)
 app.include_router(orders.router)
 app.include_router(auth.router)
