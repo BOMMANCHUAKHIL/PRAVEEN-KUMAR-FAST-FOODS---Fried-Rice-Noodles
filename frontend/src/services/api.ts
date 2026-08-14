@@ -9,15 +9,11 @@ export const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 30000,
-  // ✅ Force HTTPS
-  httpsAgent: new (require('https').Agent)({
-    rejectUnauthorized: false,
-  }),
 });
 
 api.interceptors.request.use(
   (config) => {
-    // ✅ Ensure URL uses HTTPS
+    // ✅ Ensure URL uses HTTPS (simple string replacement)
     if (config.url && config.url.startsWith('http://')) {
       config.url = config.url.replace('http://', 'https://');
     }
