@@ -43,7 +43,7 @@ async def place_order(order_data: dict, customer: dict = Depends(get_current_cus
         print(f"❌ Error placing order: {e}")
         raise HTTPException(500, f"Error: {str(e)}")
 
-@router.get("/")
+@router.get("")
 async def get_orders(customer: dict = Depends(get_current_customer)):
     """Get all orders for the current customer"""
     try:

@@ -79,7 +79,7 @@ from ..auth import get_current_admin
 
 router = APIRouter(prefix="/api/products", tags=["products"])
 
-@router.get("/")
+@router.get("")
 async def get_products(available_only: bool = True):
     query = {"is_available": True} if available_only else {}
     cursor = products_collection.find(query)
