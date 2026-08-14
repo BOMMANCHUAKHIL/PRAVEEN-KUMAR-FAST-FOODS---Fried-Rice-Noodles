@@ -4,7 +4,7 @@ from ..database import products_collection
 from ..auth import get_current_admin
 from pydantic import BaseModel
 from typing import List, Optional
-
+from ..schemas import Product
 router = APIRouter(prefix="/api/products", tags=["products"])
 
 class ProductVariant(BaseModel):
@@ -72,3 +72,44 @@ async def create_product(product: ProductCreate, admin: dict = Depends(get_curre
     new_product["createdAt"] = datetime.utcnow().isoformat()
     result = await products_collection.insert_product(new_product)
     return {"message": "Product created", "id": str(result.get("_id", ""))}
+
+
+from ..schemas import Product  # Import your Product schema
+
+
+@router.put("/{product_id}")
+async def update_product(
+        product_id: str,
+        product_update: ProductCreate,
+        admin: dict = Depends(get_current_admin)
+):
+    """Update an existing product"""
+    try:
+        # Check if product exists
+        existing_product = await products_collection.find_product(product_id)
+        if not existing_product:
+            raise HTTPException(404, f"Product {product_id} not found")
+
+        # Prepare update data
+        update_data = product_update.dict(exclude_unset=True)
+        update_data["updated_at"] = datetime.utcnow().isoformat()
+
+        # Perform update in your database
+        updated_product = await products_collection.update_product(
+            product_id,
+            update_data
+        )
+
+        if not updated_product:
+            raise HTTPException(500, "Failed to update product")
+
+        return {
+            "message": "Product updated successfully",
+            "product": product_helper(updated_product)
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Error updating product: {e}")
+        raise HTTPException(500, f"Error updating product: {str(e)}")
