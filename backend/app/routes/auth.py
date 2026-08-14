@@ -21,10 +21,21 @@ class OTPVerifyRequest(BaseModel):
 @router.post("/send-otp")
 async def send_otp(req: PhoneRequest):
     if len(req.phone) < 10:
-        raise HTTPException(400, "Invalid phone number")
+        raise HTTPException(status_code=400, detail="Invalid phone number")
+
     otp = generate_otp(req.phone)
-    send_otp_sms(req.phone, otp)
-    return {"message": "OTP sent", "otp": otp}
+
+    sms_sent = send_otp_sms(req.phone, otp)
+
+    if not sms_sent:
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to send OTP"
+        )
+
+    return {
+        "message": "OTP sent successfully"
+    }
 
 
 @router.post("/verify-otp")
