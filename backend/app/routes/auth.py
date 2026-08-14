@@ -17,21 +17,34 @@ class OTPVerifyRequest(BaseModel):
     phone: str
     otp: str
 
-
 @router.post("/send-otp")
 async def send_otp(req: PhoneRequest):
     if len(req.phone) < 10:
-        raise HTTPException(status_code=400, detail="Invalid phone number")
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid phone number"
+        )
+
+    print(f"📞 [SEND-OTP] Request received for {req.phone}")
 
     otp = generate_otp(req.phone)
 
+    print(f"🔐 [SEND-OTP] Generated OTP: {otp}")
+    print("📤 [SEND-OTP] Calling Fast2SMS...")
+
     sms_sent = send_otp_sms(req.phone, otp)
 
+    print(f"📨 [SEND-OTP] Fast2SMS result: {sms_sent}")
+
     if not sms_sent:
+        print("❌ [SEND-OTP] SMS FAILED")
+
         raise HTTPException(
             status_code=500,
             detail="Failed to send OTP"
         )
+
+    print("✅ [SEND-OTP] SMS SENT")
 
     return {
         "message": "OTP sent successfully"
