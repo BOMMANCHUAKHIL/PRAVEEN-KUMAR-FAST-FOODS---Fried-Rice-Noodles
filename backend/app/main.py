@@ -7,37 +7,58 @@ from .routes import products, orders, auth
 
 app = FastAPI(title="PRAVEEN KUMAR FAST FOODS API")
 
-# ✅ CORS Configuration - This must be FIRST
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods (GET, POST, PUT, DELETE, OPTIONS)
-    allow_headers=["*"],  # Allow all headers
-    expose_headers=["*"],  # Expose all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    if form_data.username != settings.ADMIN_EMAIL or not verify_password(
-        form_data.password, get_password_hash(settings.ADMIN_PASSWORD)
-    ):
+    # ✅ Debug logs
+    print(f"🔍 Login attempt: {form_data.username}")
+    print(f"🔑 Expected ADMIN_EMAIL: {settings.ADMIN_EMAIL}")
+    print(f"🔑 Expected ADMIN_PASSWORD: {settings.ADMIN_PASSWORD}")
+
+    if form_data.username != settings.ADMIN_EMAIL:
+        print(f"❌ Email mismatch: {form_data.username} != {settings.ADMIN_EMAIL}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    # Check password
+    hashed = get_password_hash(settings.ADMIN_PASSWORD)
+    is_valid = verify_password(form_data.password, hashed)
+    print(f"🔍 Password valid: {is_valid}")
+
+    if not is_valid:
+        print(f"❌ Password invalid for {form_data.username}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    print(f"✅ Login successful for {form_data.username}")
     access_token = create_access_token(data={"sub": form_data.username, "role": "admin"})
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 # Register all routers
 app.include_router(products.router)
 app.include_router(orders.router)
 app.include_router(auth.router)
 
+
 @app.get("/")
 async def root():
     return {"message": "PRAVEEN KUMAR FAST FOODS API"}
+
 
 @app.get("/health")
 async def health_check():
