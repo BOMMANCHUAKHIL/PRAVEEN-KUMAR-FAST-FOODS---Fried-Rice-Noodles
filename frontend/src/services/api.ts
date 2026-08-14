@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // ✅ HARDCODE the backend URL directly
-const API_URL = 'https://ahaa-backend-production.up.railway.app';
+const API_URL = 'https://praveen-kumar-fast-foods-fried-rice-noodles-production.up.railway.app';
 
 console.log('📡 API URL:', API_URL);
 
