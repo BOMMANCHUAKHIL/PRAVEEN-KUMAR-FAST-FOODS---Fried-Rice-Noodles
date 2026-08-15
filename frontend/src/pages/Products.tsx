@@ -41,6 +41,13 @@ export default function Products() {
     fetchProducts();
   }, []);
 
+  // ✅ ADD THIS MISSING FUNCTION
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category === selectedCategory ? '' : category);
+    setIsFilterOpen(false);
+  };
+
+  // Filter products
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) ||
                           (product.description && product.description.toLowerCase().includes(search.toLowerCase()));
@@ -61,7 +68,12 @@ export default function Products() {
   };
 
   if (loading) {
-    return <div className="text-center py-16 text-xl">Loading menu...</div>;
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="text-6xl mb-4 animate-spin">🍜</div>
+        <h2 className="text-xl text-gray-600">Loading our delicious menu...</h2>
+      </div>
+    );
   }
 
   return (
