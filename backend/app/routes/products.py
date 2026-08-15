@@ -104,43 +104,57 @@ async def create_product(
 
 @router.put("/{product_id}")
 async def update_product(
-        product_id: str,
-        product_update: ProductCreate,
-        admin: dict = Depends(get_current_admin)
+    product_id: str,
+    product_update: ProductCreate,
+    admin: dict = Depends(get_current_admin)
 ):
     """Update an existing product"""
+
     try:
-        # Check if product exists
-        existing_product = await products_collection.find_product(product_id)
+        print(f"🔄 Updating product: {product_id}")
+
+        existing_product = await products_collection.find_product(
+            product_id
+        )
+
         if not existing_product:
-            raise HTTPException(404, f"Product {product_id} not found")
+            raise HTTPException(
+                status_code=404,
+                detail=f"Product {product_id} not found"
+            )
 
-        # Prepare update data - EXCLUDE 'inStock' and use 'in_stock' for database
         update_data = product_update.dict(exclude_unset=True)
-
-        # Ensure variants use the correct field name for the database
-        if "variants" in update_data:
-            for variant in update_data["variants"]:
-                if "inStock" in variant:
-                    variant["in_stock"] = variant.pop("inStock")  # Convert to snake_case
 
         update_data["updated_at"] = datetime.utcnow().isoformat()
 
-        # Perform update
-        updated_product = await products_collection.update_product(product_id, update_data)
+        updated_product = await products_collection.update_product(
+            product_id,
+            update_data
+        )
 
         if not updated_product:
-            raise HTTPException(500, "Failed to update product")
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to update product"
+            )
 
         return {
             "message": "Product updated successfully",
             "product": product_helper(updated_product)
         }
+
     except HTTPException:
         raise
+
     except Exception as e:
         print(f"❌ Error updating product: {e}")
-        raise HTTPException(500, f"Error updating product: {str(e)}")
+
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating product: {str(e)}"
+        )
+
+
 @router.delete("/{product_id}")
 async def delete_product(
     product_id: str,
