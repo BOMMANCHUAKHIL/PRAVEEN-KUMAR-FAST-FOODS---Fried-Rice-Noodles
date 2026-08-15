@@ -1,53 +1,29 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/ProductCard';
 import { FaSearch, FaFilter, FaTimes } from 'react-icons/fa';
-import axios from 'axios';
 
 export default function Products() {
   const [searchParams] = useSearchParams();
   const { addToCart } = useCart();
-
-  const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { products, loading } = useProducts();
 
   const categoryFilter = searchParams.get('category') || '';
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(categoryFilter);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // ✅ FETCH PRODUCTS FROM BACKEND
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const API_URL = import.meta.env.VITE_API_BASE || 'https://praveen-kumar-fast-foods-fried-rice-noodles-production.up.railway.app';
-        const response = await axios.get(`${API_URL}/api/products`);
+  // Auto-generate categories from live data
+  const categories = Array.from(new Set(products.map(p => p.category)))
+    .map(cat => ({ id: cat, name: cat, icon: '🍜' }));
 
-        setProducts(response.data);
-
-        // Auto-generate categories from data
-        const uniqueCategories = Array.from(
-          new Set(response.data.map((p: any) => p.category))
-        ).map((cat) => ({ id: cat, name: cat, icon: '🍜' }));
-        setCategories(uniqueCategories);
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  // ✅ ADD THIS MISSING FUNCTION
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category === selectedCategory ? '' : category);
     setIsFilterOpen(false);
   };
 
-  // Filter products
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) ||
                           (product.description && product.description.toLowerCase().includes(search.toLowerCase()));
@@ -63,17 +39,12 @@ export default function Products() {
       variant,
       price,
       quantity: 1,
-      image: product.image || product.image_url,
+      image: product.image,
     });
   };
 
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <div className="text-6xl mb-4 animate-spin">🍜</div>
-        <h2 className="text-xl text-gray-600">Loading our delicious menu...</h2>
-      </div>
-    );
+    return <div className="container mx-auto px-4 py-16 text-center text-xl">Loading delicious menu...</div>;
   }
 
   return (

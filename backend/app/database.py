@@ -12,7 +12,6 @@ class InMemoryDB:
         self.load_data()
 
     def load_data(self):
-        """Load data from JSON file if exists"""
         if os.path.exists(self.data_file):
             try:
                 with open(self.data_file, 'r') as f:
@@ -26,9 +25,10 @@ class InMemoryDB:
                 print(f"⚠️ Error loading data: {e}")
         else:
             print("📂 No existing data file, starting fresh")
+            # Create empty file
+            self.save_data()
 
     def save_data(self):
-        """Save data to JSON file"""
         try:
             data = {
                 'products': self.products,

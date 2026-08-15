@@ -1,204 +1,97 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
-import { api } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
-import { formatPrice } from '../../utils/helpers';
-import AdminLayout from '../../components/AdminLayout';
-import toast from 'react-hot-toast';
-
-interface Product {
-  id: string;
-  _id?: string;
-  name: string;
-  description: string;
-  category: string;
-  image?: string;
-  variants: Array<{
-    weight: string;
-    price: number;
-    inStock?: boolean;
-  }>;
-  isAvailable: boolean;
-  isFeatured: boolean;
-  tags?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { useProducts } from '../../hooks/useProducts';
+import { FaEdit, FaTrash, FaPlus, FaSpinner } from 'react-icons/fa';
 
 export default function AdminProducts() {
-  const { adminToken } = useAuth();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { products, loading, deleteProduct } = useProducts();
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/api/products');
-      console.log('📦 Products from API:', response.data);
-      setProducts(response.data || []);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      toast.error('Failed to load products');
-      // Fallback to empty array
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (productId: string) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) {
-      return;
-    }
-
-    try {
-      await api.delete(`/api/products/${productId}`, {
-        headers: { Authorization: `Bearer ${adminToken}` }
-      });
-      toast.success('Product deleted successfully!');
-      fetchProducts(); // Refresh the list
-    } catch (error: any) {
-      console.error('Error deleting product:', error);
-      toast.error(error.response?.data?.detail || 'Failed to delete product');
-    }
-  };
-
-  const getProductId = (product: Product): string => {
-    return product.id || product._id || '';
-  };
-
   const filteredProducts = products.filter(p =>
-    p.name?.toLowerCase().includes(search.toLowerCase()) ||
-    p.description?.toLowerCase().includes(search.toLowerCase())
+    p.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      await deleteProduct(id);
+    }
+  };
+
   if (loading) {
-    return (
-      <AdminLayout title="Products">
-        <div className="animate-pulse space-y-4">
-          <div className="h-10 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
-        </div>
-      </AdminLayout>
-    );
+    return <div className="flex justify-center items-center h-64"><FaSpinner className="animate-spin text-4xl text-red-600" /></div>;
   }
 
   return (
-    <AdminLayout title="Manage Products">
-      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-        <div className="flex-1 min-w-[200px] relative">
-          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search products..."
-            className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none transition"
-          />
-        </div>
-        <Link
-          to="/admin/products/add"
-          className="bg-red-600 text-white px-4 py-2.5 rounded-xl text-sm hover:bg-red-700 transition flex items-center gap-2 whitespace-nowrap"
-        >
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Manage Products</h1>
+        <Link to="/admin/products/add" className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700">
           <FaPlus /> Add Product
         </Link>
       </div>
 
-      <div className="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
-              <tr>
-                <th className="px-6 py-3 text-left">Product</th>
-                <th className="px-6 py-3 text-left">Category</th>
-                <th className="px-6 py-3 text-left">Price</th>
-                <th className="px-6 py-3 text-left">Status</th>
-                <th className="px-6 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredProducts.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
-                    {products.length === 0 ? 'No products found. Add your first product!' : 'No products match your search'}
-                  </td>
-                </tr>
-              ) : (
-                filteredProducts.map((product) => {
-                  const productId = getProductId(product);
-                  const categoryIcon =
-                    product.category === 'fried-rice' ? '🍚' :
-                    product.category === 'noodles' ? '🍜' :
-                    product.category === 'starters' ? '🍗' : '🥤';
-
-                  return (
-                    <tr key={productId || product.name} className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">{categoryIcon}</span>
-                          <div>
-                            <p className="font-medium text-red-700">{product.name}</p>
-                            <p className="text-xs text-gray-500 truncate max-w-xs">
-                              {product.description?.slice(0, 60)}...
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 capitalize">
-                        {product.category?.replace('-', ' ') || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4">
-                        {product.variants?.map((v, idx) => (
-                          <span key={idx} className="block text-xs">
-                            {v.weight}: {formatPrice(v.price)}
-                          </span>
-                        ))}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          product.isAvailable !== false
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700'
-                        }`}>
-                          {product.isAvailable !== false ? 'Available' : 'Unavailable'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex justify-end gap-2">
-                          <Link
-                            to={`/admin/products/edit/${productId}`}
-                            className="p-2 rounded-lg hover:bg-blue-50 transition"
-                            title="Edit Product"
-                          >
-                            <FaEdit className="text-blue-600" />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(productId)}
-                            className="p-2 rounded-lg hover:bg-red-50 transition"
-                            title="Delete Product"
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+      <div className="bg-white rounded-xl shadow overflow-hidden">
+        <div className="p-4 border-b">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full md:w-96 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-600 outline-none"
+          />
         </div>
-      </div>
 
-      <div className="mt-4 text-sm text-gray-500">
-        Showing {filteredProducts.length} of {products.length} products
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filteredProducts.map((product) => (
+              <tr key={product.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  <div className="flex items-center">
+                    <div className="h-10 w-10 flex-shrink-0 bg-red-100 rounded-lg flex items-center justify-center text-2xl mr-3">
+                      {product.image ? <img src={product.image} alt={product.name} className="h-10 w-10 rounded-lg object-cover" /> : '🍜'}
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-900">{product.name}</div>
+                      <div className="text-sm text-gray-500 truncate max-w-xs">{product.description}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-500">{product.category}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">
+                  {product.variants.map(v => `₹${v.price}`).join(' / ')}
+                </td>
+                <td className="px-6 py-4">
+                  <span className={`px-2 py-1 text-xs rounded-full ${product.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    {product.isAvailable ? 'Available' : 'Unavailable'}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <Link to={`/admin/products/edit/${product.id}`} className="text-blue-600 hover:text-blue-900 mr-4">
+                    <FaEdit className="inline" />
+                  </Link>
+                  <button onClick={() => handleDelete(product.id)} className="text-red-600 hover:text-red-900">
+                    <FaTrash className="inline" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {filteredProducts.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">No products found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
-    </AdminLayout>
+    </div>
   );
 }
