@@ -6,7 +6,7 @@ from ..database import customers_collection
 from ..auth import create_access_token, get_password_hash, verify_password
 from ..utils.otp import generate_otp, send_otp_sms, verify_otp
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+router = APIRouter(prefix="/api/auth", tags=["authentication"])
 
 
 # ===== PASSWORD LOGIN SCHEMAS =====

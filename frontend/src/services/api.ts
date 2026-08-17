@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Backend API URL
 const API_URL =
   import.meta.env.VITE_API_BASE ||
   'https://praveen-kumar-fast-foods-fried-rice-noodles-production.up.railway.app';
@@ -15,22 +14,11 @@ export const api = axios.create({
   timeout: 30000,
 });
 
-// =====================================================
-// REQUEST INTERCEPTOR
-// =====================================================
-
 api.interceptors.request.use(
   (config) => {
-    // Make sure accidental HTTP URLs are converted to HTTPS
-    if (config.url && config.url.startsWith('http://')) {
-      config.url = config.url.replace('http://', 'https://');
-    }
-
-    // Get either admin or customer token
-    const adminToken = localStorage.getItem('adminToken');
-    const customerToken = localStorage.getItem('customerToken');
-
-    const token = adminToken || customerToken;
+    const token =
+      localStorage.getItem('adminToken') ||
+      localStorage.getItem('customerToken');
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -39,7 +27,6 @@ api.interceptors.request.use(
     console.log(
       '📤 Request:',
       config.method?.toUpperCase(),
-      config.baseURL,
       config.url
     );
 
@@ -50,10 +37,6 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
-// =====================================================
-// RESPONSE INTERCEPTOR
-// =====================================================
 
 api.interceptors.response.use(
   (response) => {
@@ -69,13 +52,8 @@ api.interceptors.response.use(
     console.error(
       '❌ Response Error:',
       error.response?.status,
-      error.response?.data || error.message
+      error.response?.data
     );
-
-    // Optional: handle unauthorized requests
-    if (error.response?.status === 401) {
-      console.warn('⚠️ Unauthorized request');
-    }
 
     return Promise.reject(error);
   }
