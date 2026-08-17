@@ -7,6 +7,7 @@ interface ProductGridProps {
   loading?: boolean;
 }
 
+
 export default function ProductGrid({ products, onAddToCart, loading }: ProductGridProps) {
   if (loading) {
     return (
