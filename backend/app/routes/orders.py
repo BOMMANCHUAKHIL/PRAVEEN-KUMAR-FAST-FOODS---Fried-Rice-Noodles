@@ -4,11 +4,14 @@ import random, string
 from ..database import orders_collection
 from ..auth import get_current_customer
 
-# ✅ REMOVED the prefix from here
-router = APIRouter(tags=["orders"])
+
+router = APIRouter(
+    prefix="/api/orders",
+    tags=["orders"]
+)
 
 
-@router.post("/api/orders")  # ✅ Full path explicit
+@router.post("")  # ✅ Full path explicit
 async def place_order(order_data: dict, customer: dict = Depends(get_current_customer)):
     """Place a new order"""
     try:
@@ -44,7 +47,7 @@ async def place_order(order_data: dict, customer: dict = Depends(get_current_cus
         print(f"❌ Error placing order: {e}")
         raise HTTPException(500, f"Error: {str(e)}")
 
-@router.get("/api/orders")
+@router.get("")
 async def get_orders(customer: dict = Depends(get_current_customer)):
     """Get all orders for the current customer"""
     try:
@@ -57,7 +60,7 @@ async def get_orders(customer: dict = Depends(get_current_customer)):
         print(f"❌ Error fetching orders: {e}")
         return []
 
-@router.get("/api/orders/all")
+@router.get("/all")
 async def get_all_orders():
     """Get all orders (Admin only)"""
     try:
@@ -69,7 +72,7 @@ async def get_all_orders():
         print(f"❌ Error fetching all orders: {e}")
         return []
 
-@router.get("/api/orders/{order_id}")
+@router.get("/{order_id}")
 async def get_order(order_id: str, customer: dict = Depends(get_current_customer)):
     """Get a specific order by ID or order number"""
     try:
@@ -98,7 +101,7 @@ async def get_order(order_id: str, customer: dict = Depends(get_current_customer
         print(f"❌ Error fetching order: {e}")
         raise HTTPException(500, f"Error: {str(e)}")
 
-@router.put("/api/orders/{order_id}/status")
+@router.put("/{order_id}/status")
 async def update_order_status(order_id: str, status_data: dict):
     """Update order status (Admin only)"""
     try:
@@ -129,7 +132,7 @@ async def update_order_status(order_id: str, status_data: dict):
         print(f"❌ Error updating order: {e}")
         raise HTTPException(500, f"Error: {str(e)}")
 
-@router.get("/api/orders/track/{order_number}")
+@router.get("/track/{order_number}")
 async def track_order(order_number: str):
     """Track an order by order number"""
     try:

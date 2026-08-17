@@ -31,14 +31,24 @@ export interface Order {
 }
 
 export const orderService = {
-  create: (data: CreateOrderData) => api.post('/orders', data),
-getAll: () => api.get('/orders'),
-getById: (id: string) => api.get(`/orders/${id}`),
-getMyOrders: () => api.get('/orders/my-orders'),
-updateStatus: (id: string, status: string) =>
-  api.put(`/orders/${id}/status`, { status }),
-cancel: (id: string) =>
-  api.put(`/orders/${id}/cancel`),
-requestLiveVideo: (id: string) =>
-  api.post(`/orders/${id}/live-video-request`),
+  create: (data: CreateOrderData) =>
+    api.post('/api/orders', data),
+
+  getMyOrders: () =>
+    api.get('/api/orders'),
+
+  getAll: () =>
+    api.get('/api/orders/all'),
+
+  getById: (id: string) =>
+    api.get(`/api/orders/${id}`),
+
+  updateStatus: (
+    id: string,
+    status: string
+  ) =>
+    api.put(
+      `/api/orders/${id}/status`,
+      { status }
+    ),
 };

@@ -57,7 +57,7 @@ app.include_router(auth.router)
 
 @app.get("/")
 async def root():
-    return {"message": "PRAVEEN KUMAR FAST FOODS API"}
+    return {"message": "PRAVEEN KUMAR FAST FOODS API is Running"}
 
 
 @app.get("/health")
