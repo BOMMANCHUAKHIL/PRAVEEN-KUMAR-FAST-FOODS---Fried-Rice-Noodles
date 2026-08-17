@@ -7,6 +7,7 @@ from ..auth import get_current_customer
 # ✅ REMOVED the prefix from here
 router = APIRouter(tags=["orders"])
 
+
 @router.post("/api/orders")  # ✅ Full path explicit
 async def place_order(order_data: dict, customer: dict = Depends(get_current_customer)):
     """Place a new order"""
