@@ -81,6 +81,7 @@ async def update_product(
         print(f"❌ Error updating product: {e}")
         raise HTTPException(500, f"Error updating product: {str(e)}")
 
+
 @router.delete("/api/products/{product_id}")
 async def delete_product(
     product_id: str,
