@@ -1,158 +1,114 @@
 ﻿import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { FaWhatsapp, FaArrowLeft, FaShoppingCart } from 'react-icons/fa';
-import { products, Product } from '../data/products';
-import QuantitySelector from '../components/QuantitySelector';
+import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { formatPrice } from '../utils/helpers';
-import toast from 'react-hot-toast';
+import { api } from '../services/api';
+import { FaShoppingCart, FaArrowLeft } from 'react-icons/fa';
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { addToCart } = useCart();
-
-  const [product, setProduct] = useState<Product | null>(null);
-  const [selectedVariant, setSelectedVariant] = useState<string>('');
-  const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState<any>(null);
+  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const found = products.find((p) => p.id === id);
-    if (found) {
-      setProduct(found);
-      setSelectedVariant(found.variants[0].weight);
-      setQuantity(1);
-    }
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/api/products/${id}`);
+        setProduct(response.data);
+        if (response.data.variants && response.data.variants.length > 0) {
+          setSelectedVariant(response.data.variants[0]);
+        }
+        setError('');
+      } catch (err) {
+        setError('Product not found');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchProduct();
   }, [id]);
 
-  if (!product) {
+  const handleAddToCart = () => {
+    if (!product || !selectedVariant) return;
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      variant: selectedVariant.weight,
+      price: selectedVariant.price,
+      quantity: 1,
+      image: product.image,
+    });
+  };
+
+  if (loading) {
+    return <div className="container mx-auto px-4 py-16 text-center text-xl">Loading product details...</div>;
+  }
+
+  if (error || !product) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-red-700">Product not found</h2>
-        <Link to="/products" className="mt-4 inline-block bg-red-600 text-white px-6 py-2 rounded-full">
-          Back to Menu
-        </Link>
+        <h2 className="text-2xl text-red-600 mb-4">{error || 'Product not found'}</h2>
+        <Link to="/products" className="text-red-600 underline">Go back to menu</Link>
       </div>
     );
   }
 
-  const selectedPrice = product.variants.find((v) => v.weight === selectedVariant)?.price || 0;
-
-  const handleAddToCart = () => {
-    addToCart({
-      productId: product.id,
-      name: product.name,
-      variant: selectedVariant,
-      price: selectedPrice,
-      quantity,
-      image: product.image,
-    });
-    toast.success(`${product.name} added to cart!`);
-  };
-
-  const handleWhatsAppOrder = () => {
-    const message = `Hi! I'd like to order:\n\n${product.name} - ${selectedVariant} x${quantity}\nPrice: ${formatPrice(selectedPrice * quantity)}\n\nPlease confirm my order.`;
-    window.open(`https://wa.me/91800851140?text=${encodeURIComponent(message)}`, '_blank');
-  };
-
-  const getImage = () => {
-    const images: Record<string, string> = {
-      'Veg Fried Rice': '🍚',
-      'Gobbi Fried Rice': '🥦',
-      'Chicken Fried Rice': '🍗',
-      'Egg Fried Rice': '🥚',
-      'Flashman Fried Rice': '🍚',
-      'Mixed Fried Rice': '🍚',
-      'Veg Noodles': '🍜',
-      'Gobbi Noodles': '🍜',
-      'Chicken Noodles': '🍜',
-      'Egg Noodles': '🍜',
-      'Leg Piece': '🍗',
-      'Chicken Wings': '🍗',
-      'Gobbi Manchuriya': '🥦',
-      'Chicken Manchuriya': '🍗',
-      'Chilli Chicken': '🍗',
-    };
-    return images[product.name] || '🍽️';
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition mb-6">
-        <FaArrowLeft /> Back
-      </button>
+      <Link to="/products" className="inline-flex items-center text-red-600 mb-6 hover:underline">
+        <FaArrowLeft className="mr-2" /> Back to Menu
+      </Link>
 
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-        <div className="bg-yellow-50 rounded-3xl p-8 flex items-center justify-center min-h-[300px] md:min-h-[400px] border border-gray-200">
-          <span className="text-8xl">{getImage()}</span>
-        </div>
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="md:flex">
+          <div className="md:w-1/2 bg-yellow-50 p-8 flex items-center justify-center min-h-[300px]">
+            <span className="text-8xl">
+              {product.image || '🍽️'}
+            </span>
+          </div>
+          <div className="md:w-1/2 p-8">
+            <h1 className="text-3xl font-bold text-red-700 mb-2">{product.name}</h1>
+            <p className="text-gray-600 mb-4">{product.description}</p>
 
-        <div className="space-y-6">
-          <div>
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-sm bg-yellow-100 text-red-700 px-3 py-1 rounded-full">
-                {product.category === 'fried-rice' ? '🍚 Fried Rice' :
-                 product.category === 'noodles' ? '🍜 Noodles' : '🍗 Starter'}
-              </span>
-              {product.isFeatured && (
-                <span className="text-sm bg-red-600 text-white px-3 py-1 rounded-full">⭐ Featured</span>
-              )}
+            <div className="mb-6">
+              <h3 className="font-semibold text-gray-700 mb-2">Select Size:</h3>
+              <div className="flex flex-wrap gap-2">
+                {product.variants.map((variant: any) => (
+                  <button
+                    key={variant.weight}
+                    onClick={() => setSelectedVariant(variant)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                      selectedVariant?.weight === variant.weight
+                        ? 'bg-red-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {variant.weight} - ₹{variant.price}
+                  </button>
+                ))}
+              </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-red-700 mt-3">{product.name}</h1>
-            <p className="text-gray-600 mt-2 text-lg">{product.description}</p>
-          </div>
 
-          <div>
-            <h3 className="font-semibold text-gray-700 mb-2">Select Size</h3>
-            <div className="flex flex-wrap gap-3">
-              {product.variants.map((variant) => (
-                <button
-                  key={variant.weight}
-                  onClick={() => setSelectedVariant(variant.weight)}
-                  className={`px-5 py-3 rounded-2xl border-2 transition ${
-                    selectedVariant === variant.weight
-                      ? 'border-red-600 bg-red-50 text-red-700 font-semibold'
-                      : 'border-gray-300 hover:border-red-400'
-                  }`}
-                >
-                  <div className="text-sm">{variant.weight}</div>
-                  <div className="font-bold text-red-700">{formatPrice(variant.price)}</div>
-                </button>
-              ))}
-            </div>
-          </div>
+            {product.tags && product.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {product.tags.map((tag: string) => (
+                  <span key={tag} className="bg-yellow-50 text-yellow-800 text-xs px-2 py-1 rounded-full border border-yellow-200">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
 
-          <div>
-            <div className="text-3xl font-bold text-red-700">{formatPrice(selectedPrice * quantity)}</div>
-            <div className="text-sm text-gray-500">{formatPrice(selectedPrice)} × {quantity}</div>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-700 mb-2">Quantity</h3>
-            <QuantitySelector quantity={quantity} onQuantityChange={setQuantity} />
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
             <button
               onClick={handleAddToCart}
-              className="flex-1 bg-red-600 text-white px-6 py-3.5 rounded-full font-semibold hover:bg-red-700 transition flex items-center justify-center gap-2"
+              className="w-full bg-red-600 text-white py-3 rounded-full font-bold hover:bg-red-700 transition flex items-center justify-center gap-2"
             >
-              <FaShoppingCart /> Add to Cart
+              <FaShoppingCart /> Add to Cart - ₹{selectedVariant?.price || 0}
             </button>
-            <button
-              onClick={handleWhatsAppOrder}
-              className="flex-1 bg-green-600 text-white px-6 py-3.5 rounded-full font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
-            >
-              <FaWhatsapp /> Order on WhatsApp
-            </button>
-          </div>
-
-          <div className="bg-yellow-50 p-4 rounded-2xl border border-yellow-200 flex items-center gap-3">
-            <span className="text-2xl">🎥</span>
-            <div>
-              <p className="font-semibold text-red-700">Live Video Available</p>
-              <p className="text-sm text-gray-600">Request a live video of your order being made</p>
-            </div>
           </div>
         </div>
       </div>
