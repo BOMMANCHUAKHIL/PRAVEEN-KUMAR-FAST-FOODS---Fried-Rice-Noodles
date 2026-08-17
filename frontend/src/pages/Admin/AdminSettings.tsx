@@ -8,7 +8,7 @@ export default function AdminSettings() {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
     storeName: 'PRAVEEN KUMAR FAST FOODS',
-    storePhone: '+91800851140',
+    storePhone: '+918008511402',
     storeEmail: 'info@pkfastfoods.com',
     storeAddress: 'Beside Naveen Tailors Kamakshi Nagar, Vidavalur, Andhra Pradesh 524318',
     deliveryRadius: 5,

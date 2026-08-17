@@ -92,7 +92,7 @@ export default function Checkout() {
       console.log('📦 Sending order:', orderData);
       console.log('🔑 Token:', customerToken ? 'Exists' : 'Missing');
 
-      const response = await api.post('/api/orders', orderData, {
+      const response = await api.post('/api/orders/', orderData, {
         headers: {
           Authorization: `Bearer ${customerToken}`
         }

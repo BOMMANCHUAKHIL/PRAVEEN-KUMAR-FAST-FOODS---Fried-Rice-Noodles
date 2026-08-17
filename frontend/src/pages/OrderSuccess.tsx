@@ -85,7 +85,7 @@ export default function OrderSuccess() {
             View My Orders
           </Link>
           <a
-            href={`https://wa.me/91800851140?text=Hi%2C%20I%20just%20placed%20order%20${order.orderNumber}`}
+            href={`https://wa.me/918008511402?text=Hi%2C%20I%20just%20placed%20order%20${order.orderNumber}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 bg-green-600 text-white py-3 rounded-full font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
