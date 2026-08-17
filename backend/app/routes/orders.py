@@ -4,10 +4,10 @@ import random, string
 from ..database import orders_collection
 from ..auth import get_current_customer
 
-router = APIRouter(prefix="/api/orders", tags=["orders"])
+# ✅ REMOVED the prefix from here
+router = APIRouter(tags=["orders"])
 
-
-@router.post("")
+@router.post("/api/orders")  # ✅ Full path explicit
 async def place_order(order_data: dict, customer: dict = Depends(get_current_customer)):
     """Place a new order"""
     try:
@@ -43,7 +43,7 @@ async def place_order(order_data: dict, customer: dict = Depends(get_current_cus
         print(f"❌ Error placing order: {e}")
         raise HTTPException(500, f"Error: {str(e)}")
 
-@router.get("")
+@router.get("/api/orders")
 async def get_orders(customer: dict = Depends(get_current_customer)):
     """Get all orders for the current customer"""
     try:
@@ -56,8 +56,7 @@ async def get_orders(customer: dict = Depends(get_current_customer)):
         print(f"❌ Error fetching orders: {e}")
         return []
 
-
-@router.get("/all")
+@router.get("/api/orders/all")
 async def get_all_orders():
     """Get all orders (Admin only)"""
     try:
@@ -69,17 +68,14 @@ async def get_all_orders():
         print(f"❌ Error fetching all orders: {e}")
         return []
 
-
-@router.get("/{order_id}")
+@router.get("/api/orders/{order_id}")
 async def get_order(order_id: str, customer: dict = Depends(get_current_customer)):
     """Get a specific order by ID or order number"""
     try:
         print(f"🔍 Looking for order with ID/number: {order_id}")
 
-        # First try to find by _id
         order = await orders_collection.find_order(order_id)
 
-        # If not found, try by order_number
         if not order:
             all_orders = orders_collection.orders
             for o in all_orders:
@@ -91,7 +87,6 @@ async def get_order(order_id: str, customer: dict = Depends(get_current_customer
             print(f"❌ Order {order_id} not found")
             raise HTTPException(404, f"Order {order_id} not found")
 
-        # Check permission
         if order.get("customer_id") != customer.get("_id"):
             raise HTTPException(403, "You don't have permission to view this order")
 
@@ -101,7 +96,8 @@ async def get_order(order_id: str, customer: dict = Depends(get_current_customer
     except Exception as e:
         print(f"❌ Error fetching order: {e}")
         raise HTTPException(500, f"Error: {str(e)}")
-@router.put("/{order_id}/status")
+
+@router.put("/api/orders/{order_id}/status")
 async def update_order_status(order_id: str, status_data: dict):
     """Update order status (Admin only)"""
     try:
@@ -113,7 +109,6 @@ async def update_order_status(order_id: str, status_data: dict):
 
         print(f"🔍 Updating order {order_id} to status: {new_status}")
 
-        # ✅ Check if order exists first
         order = await orders_collection.find_order(order_id)
         if not order:
             print(f"❌ Order {order_id} not found")
@@ -133,7 +128,7 @@ async def update_order_status(order_id: str, status_data: dict):
         print(f"❌ Error updating order: {e}")
         raise HTTPException(500, f"Error: {str(e)}")
 
-@router.get("/track/{order_number}")
+@router.get("/api/orders/track/{order_number}")
 async def track_order(order_number: str):
     """Track an order by order number"""
     try:
