@@ -46,7 +46,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <FaMapMarkerAlt className="text-yellow-300 mt-1" />
-                <span>Near Main Market, City Center</span>
+                <span>Beside Naveen Tailors Kamakshi Nagar, Vidavalur, Andhra Pradesh 524318</span>
               </li>
             </ul>
           </div>

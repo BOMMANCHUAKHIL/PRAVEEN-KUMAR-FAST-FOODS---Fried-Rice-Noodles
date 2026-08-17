@@ -7,7 +7,7 @@ from ..auth import get_current_customer
 router = APIRouter(prefix="/api/orders", tags=["orders"])
 
 
-@router.post("/")
+@router.post("")
 async def place_order(order_data: dict, customer: dict = Depends(get_current_customer)):
     """Place a new order"""
     try:

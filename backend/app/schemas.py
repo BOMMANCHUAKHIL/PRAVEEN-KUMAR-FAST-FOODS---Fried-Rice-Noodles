@@ -47,7 +47,8 @@ class DeliveryAddressCreate(BaseModel):
     phone: str
     address_line: str
     landmark: Optional[str] = None
-    city: str = "Bengaluru"
+    city: str = "Vidavalur"  # ✅ Updated default city
+    pincode: str = "524318"  # ✅ Added default pincode
     pincode: str
     lat: Optional[float] = None
     lng: Optional[float] = None
