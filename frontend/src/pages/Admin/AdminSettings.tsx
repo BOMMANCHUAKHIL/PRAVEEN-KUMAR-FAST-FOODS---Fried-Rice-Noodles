@@ -10,7 +10,7 @@ export default function AdminSettings() {
     storeName: 'PRAVEEN KUMAR FAST FOODS',
     storePhone: '+91800851140',
     storeEmail: 'info@pkfastfoods.com',
-    storeAddress: 'Near Main Market, City Center',
+    storeAddress: 'Beside Naveen Tailors Kamakshi Nagar, Vidavalur, Andhra Pradesh 524318',
     deliveryRadius: 5,
     freeDeliveryThreshold: 300,
     deliveryFee: 30,

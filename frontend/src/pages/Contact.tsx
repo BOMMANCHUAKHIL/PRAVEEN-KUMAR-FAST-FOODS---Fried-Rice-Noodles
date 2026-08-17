@@ -6,7 +6,7 @@
         <h2 className="text-xl font-bold text-red-700">PRAVEEN KUMAR FAST FOODS</h2>
         <div className="mt-4 space-y-3">
           <p><strong>📞 Phone:</strong> +91 80085 11402</p>
-          <p><strong>📍 Address:</strong> Near Main Market, City Center</p>
+          <p><strong>📍 Address:</strong> Beside Naveen Tailors Kamakshi Nagar, Vidavalur, Andhra Pradesh 524318</p>
           <p><strong>⏰ Hours:</strong> 10:00 AM - 11:00 PM</p>
         </div>
         <div className="mt-6 p-4 bg-yellow-50 rounded-xl border border-yellow-200">

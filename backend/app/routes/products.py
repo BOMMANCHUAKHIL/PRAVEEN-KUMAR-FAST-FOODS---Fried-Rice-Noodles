@@ -2,29 +2,10 @@
 from datetime import datetime
 from ..database import products_collection
 from ..auth import get_current_admin
-from pydantic import BaseModel
+from ..schemas import ProductCreate
 from typing import List, Optional
 
-router = APIRouter(
-    prefix="/api/products",
-    tags=["products"]
-)
-
-
-class ProductVariant(BaseModel):
-    weight: str
-    price: float
-    in_stock: bool = True
-
-
-class ProductCreate(BaseModel):
-    name: str
-    description: str
-    category: str
-    image_url: Optional[str] = None
-    variants: List[ProductVariant]
-    is_available: bool = True
-
+router = APIRouter(tags=["products"])
 
 def product_helper(product):
     return {
@@ -37,72 +18,30 @@ def product_helper(product):
         "isAvailable": product.get("isAvailable", True),
         "isFeatured": product.get("isFeatured", False),
         "tags": product.get("tags", []),
-        "createdAt": product.get(
-            "createdAt",
-            datetime.utcnow().isoformat()
-        ),
+        "createdAt": product.get("createdAt", datetime.utcnow().isoformat()),
+        "updatedAt": product.get("updated_at", datetime.utcnow().isoformat()),
     }
 
-
-@router.get("")
+@router.get("/api/products")
 async def get_products():
-    return [
-        product_helper(p)
-        for p in await products_collection.find_products()
-    ]
+    return [product_helper(p) for p in await products_collection.find_products()]
 
-
-@router.get("/{product_id}")
+@router.get("/api/products/{product_id}")
 async def get_product(product_id: str):
-    """Get a single product by ID"""
-    try:
-        print(f"🔍 Looking for product with ID: {product_id}")
+    product = await products_collection.find_product(product_id)
+    if not product:
+        raise HTTPException(404, f"Product {product_id} not found")
+    return product_helper(product)
 
-        product = await products_collection.find_product(product_id)
-
-        if not product:
-            for p in products_collection.products:
-                if str(p.get("id", "")) == product_id:
-                    product = p
-                    break
-
-        if not product:
-            print(f"❌ Product {product_id} not found")
-            raise HTTPException(
-                status_code=404,
-                detail=f"Product {product_id} not found"
-            )
-
-        return product_helper(product)
-
-    except HTTPException:
-        raise
-
-    except Exception as e:
-        print(f"❌ Error fetching product: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error: {str(e)}"
-        )
-
-
-@router.post("")
-async def create_product(
-    product: ProductCreate,
-    admin: dict = Depends(get_current_admin)
-):
+@router.post("/api/products")
+async def create_product(product: ProductCreate, admin: dict = Depends(get_current_admin)):
     new_product = product.dict()
     new_product["createdAt"] = datetime.utcnow().isoformat()
-
+    new_product["updated_at"] = datetime.utcnow().isoformat()
     result = await products_collection.insert_product(new_product)
+    return {"message": "Product created", "id": str(result.get("_id", ""))}
 
-    return {
-        "message": "Product created",
-        "id": str(result.get("_id", ""))
-    }
-
-
-@router.put("/{product_id}")
+@router.put("/api/products/{product_id}")
 async def update_product(
         product_id: str,
         product_update: ProductCreate,
@@ -141,21 +80,15 @@ async def update_product(
     except Exception as e:
         print(f"❌ Error updating product: {e}")
         raise HTTPException(500, f"Error updating product: {str(e)}")
-@router.delete("/{product_id}")
+
+
+@router.delete("/api/products/{product_id}")
 async def delete_product(
     product_id: str,
     admin: dict = Depends(get_current_admin)
 ):
     """Delete a product"""
-
     deleted = await products_collection.delete_product(product_id)
-
     if not deleted:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Product {product_id} not found"
-        )
-
-    return {
-        "message": "Product deleted successfully"
-    }
+        raise HTTPException(404, f"Product {product_id} not found")
+    return {"message": "Product deleted successfully"}

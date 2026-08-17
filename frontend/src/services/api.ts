@@ -1,28 +1,48 @@
 import axios from 'axios';
 
-// ✅ Explicitly use HTTPS
-const API_URL = 'https://praveen-kumar-fast-foods-fried-rice-noodles-production.up.railway.app/';
+// Backend API URL
+const API_URL =
+  import.meta.env.VITE_API_BASE ||
+  'https://praveen-kumar-fast-foods-fried-rice-noodles-production.up.railway.app';
 
 console.log('📡 API URL:', API_URL);
 
 export const api = axios.create({
   baseURL: API_URL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+  },
   timeout: 30000,
 });
 
+// =====================================================
+// REQUEST INTERCEPTOR
+// =====================================================
+
 api.interceptors.request.use(
   (config) => {
-    // ✅ Ensure URL uses HTTPS (simple string replacement)
+    // Make sure accidental HTTP URLs are converted to HTTPS
     if (config.url && config.url.startsWith('http://')) {
       config.url = config.url.replace('http://', 'https://');
     }
 
-    const token = localStorage.getItem('adminToken') || localStorage.getItem('customerToken');
+    // Get either admin or customer token
+    const adminToken = localStorage.getItem('adminToken');
+    const customerToken = localStorage.getItem('customerToken');
+
+    const token = adminToken || customerToken;
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log('📤 Request:', config.method?.toUpperCase(), config.url);
+
+    console.log(
+      '📤 Request:',
+      config.method?.toUpperCase(),
+      config.baseURL,
+      config.url
+    );
+
     return config;
   },
   (error) => {
@@ -31,13 +51,32 @@ api.interceptors.request.use(
   }
 );
 
+// =====================================================
+// RESPONSE INTERCEPTOR
+// =====================================================
+
 api.interceptors.response.use(
   (response) => {
-    console.log('📥 Response:', response.status, response.config.url);
+    console.log(
+      '📥 Response:',
+      response.status,
+      response.config.url
+    );
+
     return response;
   },
   (error) => {
-    console.error('❌ Response Error:', error.response?.status, error.response?.data);
+    console.error(
+      '❌ Response Error:',
+      error.response?.status,
+      error.response?.data || error.message
+    );
+
+    // Optional: handle unauthorized requests
+    if (error.response?.status === 401) {
+      console.warn('⚠️ Unauthorized request');
+    }
+
     return Promise.reject(error);
   }
 );
