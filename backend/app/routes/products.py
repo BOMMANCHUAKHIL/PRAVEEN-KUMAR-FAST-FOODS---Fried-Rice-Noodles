@@ -65,6 +65,7 @@ async def update_product(
 
         update_data["updated_at"] = datetime.utcnow().isoformat()
 
+
         # Perform update
         updated_product = await products_collection.update_product(product_id, update_data)
 
