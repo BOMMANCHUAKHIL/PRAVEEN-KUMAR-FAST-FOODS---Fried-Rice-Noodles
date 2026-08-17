@@ -54,7 +54,7 @@ async def update_product(
         if not existing_product:
             raise HTTPException(404, f"Product {product_id} not found")
 
-        # Prepare update data
+        # Prepare update data - EXCLUDE 'inStock' and use 'in_stock' for database
         update_data = product_update.dict(exclude_unset=True)
 
         # Ensure variants use the correct field name for the database
@@ -64,7 +64,6 @@ async def update_product(
                     variant["in_stock"] = variant.pop("inStock")  # Convert to snake_case
 
         update_data["updated_at"] = datetime.utcnow().isoformat()
-
 
         # Perform update
         updated_product = await products_collection.update_product(product_id, update_data)
