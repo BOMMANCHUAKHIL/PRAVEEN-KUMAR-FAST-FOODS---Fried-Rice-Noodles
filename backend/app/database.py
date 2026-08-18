@@ -1,128 +1,195 @@
-﻿import json
-import os
+﻿import os
 from datetime import datetime
 
-class InMemoryDB:
-    def __init__(self):
-        self.data_file = "db_data.json"
-        self.products = []
-        self.orders = []
-        self.customers = []
-        self._id_counter = 1
-        self.load_data()
+from dotenv import load_dotenv
+from pymongo import MongoClient
+from bson import ObjectId
 
-    def load_data(self):
-        if os.path.exists(self.data_file):
-            try:
-                with open(self.data_file, 'r') as f:
-                    data = json.load(f)
-                    self.products = data.get('products', [])
-                    self.orders = data.get('orders', [])
-                    self.customers = data.get('customers', [])
-                    self._id_counter = data.get('_id_counter', 1)
-                    print(f"📂 Loaded: {len(self.orders)} orders, {len(self.products)} products")
-            except Exception as e:
-                print(f"⚠️ Error loading data: {e}")
-        else:
-            print("📂 No existing data file, starting fresh")
-            # Create empty file
-            self.save_data()
+# Load .env
+load_dotenv()
 
-    def save_data(self):
-        try:
-            data = {
-                'products': self.products,
-                'orders': self.orders,
-                'customers': self.customers,
-                '_id_counter': self._id_counter,
-                'saved_at': datetime.utcnow().isoformat()
-            }
-            with open(self.data_file, 'w') as f:
-                json.dump(data, f, indent=2, default=str)
-            print(f"💾 Saved: {len(self.orders)} orders, {len(self.products)} products")
-        except Exception as e:
-            print(f"⚠️ Error saving data: {e}")
+# Get MongoDB connection string
+MONGO_URI = os.getenv("MONGO_URI")
 
-    def get_next_id(self):
-        self._id_counter += 1
-        self.save_data()
-        return self._id_counter - 1
+if not MONGO_URI:
+    raise RuntimeError("❌ MONGO_URI is not configured in .env")
 
-    # === PRODUCT METHODS ===
-    async def find_products(self):
-        return self.products
+print("🔗 MongoDB URI found")
 
-    async def find_product(self, product_id):
-        for p in self.products:
-            if str(p.get("_id")) == str(product_id):
-                return p
-        return None
+try:
+    # Connect to MongoDB Atlas
+    client = MongoClient(
+        MONGO_URI,
+        serverSelectionTimeoutMS=30000,
+        connectTimeoutMS=20000,
+        socketTimeoutMS=20000,
+    )
 
-    async def insert_product(self, data):
-        data["_id"] = self.get_next_id()
-        data["id"] = str(data["_id"])
-        self.products.append(data)
-        self.save_data()
-        return data
+    # Test connection
+    client.admin.command("ping")
 
-    async def update_product(self, product_id, data):
-        for i, p in enumerate(self.products):
-            if str(p.get("_id")) == str(product_id):
-                self.products[i].update(data)
-                self.save_data()
-                return self.products[i]
-        return None
+    print("✅ Connected to MongoDB Atlas successfully!")
 
-    async def delete_product(self, product_id):
-        for i, p in enumerate(self.products):
-            if str(p.get("_id")) == str(product_id):
-                del self.products[i]
-                self.save_data()
-                return True
-        return False
+except Exception as e:
+    print(f"❌ Failed to connect to MongoDB: {e}")
+    raise
 
-    # === ORDER METHODS ===
-    async def find_orders(self):
-        return self.orders
 
-    async def find_order(self, order_id):
-        for o in self.orders:
-            if str(o.get("_id")) == str(order_id):
-                return o
-        return None
+# =========================================================
+# DATABASE
+# =========================================================
 
-    async def insert_order(self, data):
-        data["_id"] = self.get_next_id()
-        self.orders.append(data)
-        self.save_data()
-        return data
+db = client["pk_fast_foods"]
 
-    async def update_order(self, order_id, data):
-        for i, o in enumerate(self.orders):
-            if str(o.get("_id")) == str(order_id):
-                self.orders[i].update(data)
-                self.save_data()
-                return self.orders[i]
-        return None
+print(f"✅ Database selected: {db.name}")
 
-    # === CUSTOMER METHODS ===
-    async def find_customer_by_phone(self, phone):
-        for c in self.customers:
-            if c.get("phone") == phone:
-                return c
-        return None
 
-    async def insert_customer(self, data):
-        data["_id"] = self.get_next_id()
-        self.customers.append(data)
-        self.save_data()
-        return data
+# =========================================================
+# COLLECTIONS
+# =========================================================
 
-# Create instance
-db = InMemoryDB()
+products_collection = db["products"]
+orders_collection = db["orders"]
+customers_collection = db["customers"]
 
-products_collection = db
-orders_collection = db
-customers_collection = db
+print("✅ Collections ready:")
+print("   - products")
+print("   - orders")
+print("   - customers")
 
-print(f"✅ Database ready with {len(db.orders)} orders")
+
+# =========================================================
+# PRODUCT FUNCTIONS
+# =========================================================
+
+async def find_products():
+    return list(products_collection.find({}))
+
+
+async def find_product(product_id):
+    try:
+        return products_collection.find_one({
+            "_id": ObjectId(product_id)
+        })
+    except Exception:
+        return products_collection.find_one({
+            "id": product_id
+        })
+
+
+async def insert_product(data):
+    data["createdAt"] = datetime.utcnow().isoformat()
+    data["updated_at"] = datetime.utcnow().isoformat()
+
+    result = products_collection.insert_one(data)
+
+    return {
+        "_id": str(result.inserted_id),
+        **data
+    }
+
+
+async def update_product(product_id, data):
+    data["updated_at"] = datetime.utcnow().isoformat()
+
+    try:
+        result = products_collection.update_one(
+            {"_id": ObjectId(product_id)},
+            {"$set": data}
+        )
+    except Exception:
+        result = products_collection.update_one(
+            {"id": product_id},
+            {"$set": data}
+        )
+
+    if result.modified_count > 0:
+        return await find_product(product_id)
+
+    return None
+
+
+async def delete_product(product_id):
+    try:
+        result = products_collection.delete_one({
+            "_id": ObjectId(product_id)
+        })
+    except Exception:
+        result = products_collection.delete_one({
+            "id": product_id
+        })
+
+    return result.deleted_count > 0
+
+
+# =========================================================
+# ORDER FUNCTIONS
+# =========================================================
+
+async def find_orders():
+    return list(orders_collection.find({}))
+
+
+async def find_order(order_id):
+    try:
+        return orders_collection.find_one({
+            "_id": ObjectId(order_id)
+        })
+    except Exception:
+        return orders_collection.find_one({
+            "order_number": order_id
+        })
+
+
+async def insert_order(data):
+    data["created_at"] = datetime.utcnow().isoformat()
+    data["updated_at"] = datetime.utcnow().isoformat()
+
+    result = orders_collection.insert_one(data)
+
+    return {
+        "_id": str(result.inserted_id),
+        **data
+    }
+
+
+async def update_order(order_id, data):
+    data["updated_at"] = datetime.utcnow().isoformat()
+
+    try:
+        orders_collection.update_one(
+            {"_id": ObjectId(order_id)},
+            {"$set": data}
+        )
+    except Exception:
+        orders_collection.update_one(
+            {"order_number": order_id},
+            {"$set": data}
+        )
+
+    return await find_order(order_id)
+
+
+# =========================================================
+# CUSTOMER FUNCTIONS
+# =========================================================
+
+async def find_customer_by_phone(phone):
+    return customers_collection.find_one({
+        "phone": phone
+    })
+
+
+async def insert_customer(data):
+    data["created_at"] = datetime.utcnow().isoformat()
+    data["updated_at"] = datetime.utcnow().isoformat()
+
+    result = customers_collection.insert_one(data)
+
+    return {
+        "_id": str(result.inserted_id),
+        **data
+    }
+
+
+print("✅ MongoDB Database is ready!")
