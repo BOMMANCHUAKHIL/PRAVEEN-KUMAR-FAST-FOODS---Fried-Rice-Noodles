@@ -1,6 +1,10 @@
-﻿from pydantic import BaseModel
+﻿from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
+
+class ProductVariantCreate(BaseModel):
+    weight: str
+    price: float
 
 class ProductVariant(BaseModel):
     weight: str

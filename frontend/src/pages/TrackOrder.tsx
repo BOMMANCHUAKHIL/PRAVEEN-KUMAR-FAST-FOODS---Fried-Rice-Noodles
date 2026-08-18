@@ -217,7 +217,7 @@ export default function TrackOrder() {
           </div>
           <div className="mt-4 pt-4 border-t border-yellow-200">
             <a
-              href="https://wa.me/91800851140"
+              href="https://wa.me/918008511402"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-sm hover:bg-green-700 transition"

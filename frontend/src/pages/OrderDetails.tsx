@@ -326,7 +326,7 @@ export default function OrderDetails() {
       {/* Actions */}
       <div className="flex flex-wrap gap-4">
         <a
-          href={`https://wa.me/91800851140?text=Hi%2C%20I%20need%20help%20with%20my%20order%20${order.order_number}`}
+          href={`https://wa.me/918008511402?text=Hi%2C%20I%20need%20help%20with%20my%20order%20${order.order_number}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"

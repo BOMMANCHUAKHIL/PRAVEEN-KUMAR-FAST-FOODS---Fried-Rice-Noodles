@@ -20,8 +20,7 @@ app.add_middleware(
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     # ✅ Debug logs
     print(f"🔍 Login attempt: {form_data.username}")
-    print(f"🔑 Expected ADMIN_EMAIL: {settings.ADMIN_EMAIL}")
-    print(f"🔑 Expected ADMIN_PASSWORD: {settings.ADMIN_PASSWORD}")
+
 
     if form_data.username != settings.ADMIN_EMAIL:
         print(f"❌ Email mismatch: {form_data.username} != {settings.ADMIN_EMAIL}")
