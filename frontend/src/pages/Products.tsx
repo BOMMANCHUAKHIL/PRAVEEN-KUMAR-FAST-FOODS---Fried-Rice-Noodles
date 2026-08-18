@@ -26,7 +26,7 @@ export default function Products() {
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) ||
-                          (product.description && product.description.toLowerCase().includes(search.toLowerCase()));
+                      (product.description && product.description.toLowerCase().includes(search.toLowerCase()));
     const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
     return matchesSearch && matchesCategory;
   });
@@ -120,15 +120,15 @@ export default function Products() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            // Replace the existing filteredProducts logic with this type-safe version
-  const filteredProducts: any[] = products.filter((product: any) => {
-    const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) ||
-                          (product.description && product.description.toLowerCase().includes(search.toLowerCase()));
-    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
-    return matchesSearch && matchesCategory;
-  });
-        </div>
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {filteredProducts.map((product: any) => (
+    <ProductCard
+      key={product.id}
+      product={product}
+      onAddToCart={handleAddToCart}
+    />
+  ))}
+</div>
       )}
     </div>
   );
