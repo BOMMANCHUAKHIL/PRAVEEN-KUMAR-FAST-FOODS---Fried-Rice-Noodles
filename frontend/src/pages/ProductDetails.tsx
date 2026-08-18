@@ -84,7 +84,7 @@ export default function ProductDetails() {
     }
 
     addToCart({
-      productId: product.id,
+      productId: String(product.id),
       name: product.name,
       variant: selectedVariant.weight,
       price: selectedVariant.price,

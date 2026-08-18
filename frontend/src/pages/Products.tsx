@@ -34,7 +34,7 @@ export default function Products() {
   const handleAddToCart = (product: any, variant: string) => {
     const price = product.variants.find((v: any) => v.weight === variant)?.price || 0;
     addToCart({
-      productId: product.id,
+      productId: String(product.id),
       name: product.name,
       variant,
       price,
@@ -121,9 +121,13 @@ export default function Products() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
-          ))}
+            // Replace the existing filteredProducts logic with this type-safe version
+  const filteredProducts: any[] = products.filter((product: any) => {
+    const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) ||
+                          (product.description && product.description.toLowerCase().includes(search.toLowerCase()));
+    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
+    return matchesSearch && matchesCategory;
+  });
         </div>
       )}
     </div>
